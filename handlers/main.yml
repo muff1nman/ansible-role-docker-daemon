@@ -1,0 +1,3 @@
+---
+- name: dockerdaemon
+  service: name=docker state=restarted

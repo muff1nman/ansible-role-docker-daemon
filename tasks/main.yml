@@ -1,0 +1,22 @@
+---
+- name: Install docker
+  package:
+    name: moby-engine
+- name: Configure /etc/default/grub
+  lineinfile:
+    path: /etc/default/grub
+    backup: yes
+    regexp: '^GRUB_CMDLINE_LINUX="(.*?)?(?:systemd.unified_cgroup_hierarchy=0 )?(.*?)?"$'
+    line: 'GRUB_CMDLINE_LINUX="\1systemd.unified_cgroup_hierarchy=0 \2"'
+    backrefs: yes
+  notify: [ 'Update Boot Image' ]
+- name: Configure docker sysconfig
+  copy:
+    src: docker
+    dest: /etc/sysconfig/docker
+  notify: [ "dockerdaemon" ]
+- name: Start and enable docker
+  service:
+    state: started
+    enabled: yes
+    name: docker
